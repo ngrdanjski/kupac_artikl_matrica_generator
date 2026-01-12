@@ -28,12 +28,19 @@ def process_data(df, kupac_col, artikl_col):
     Process data using set operations - minimal memory footprint.
     Returns only what's needed for stats and Excel generation.
     """
+    # Drop rows with NaN in key columns
+    df_clean = df[[kupac_col, artikl_col]].dropna()
+
+    # Convert to string to avoid type comparison issues
+    kupac_values = df_clean[kupac_col].astype(str)
+    artikl_values = df_clean[artikl_col].astype(str)
+
     # Get unique pairs as frozen set for O(1) lookup
-    pair_set = set(zip(df[kupac_col], df[artikl_col]))
+    pair_set = set(zip(kupac_values, artikl_values))
 
     # Get sorted unique values
-    kupci = sorted(df[kupac_col].unique())
-    artikli = sorted(df[artikl_col].unique())
+    kupci = sorted(kupac_values.unique())
+    artikli = sorted(artikl_values.unique())
 
     # Count per kupac/artikl using dict (faster than pandas for this)
     kupac_counts = {}
